@@ -1,4 +1,5 @@
 import { Evaluation } from "./Evaluation";
+import Queue from "queue-fifo";
 
 class StockFishEngine {
     constructor(enginePath) {
@@ -12,7 +13,7 @@ class StockFishEngine {
 
     async getEvaluation(fen) {
         if (this.evaluating) {
-            return new Evaluation("", "", "");
+            throw new Error("Stockfish is in use. Instead, queue a function with StockfishTaskManager")
         }
         this.evaluating = true;
         let evalType = null;
@@ -27,7 +28,6 @@ class StockFishEngine {
 
             const handleMessage = (event) => {
                 let result = event.data;
-                console.log(result);
                 if (result.includes(`info depth ${this.depth}`)) {
                     let evaluationMatch = result.match(/score cp (-?\d+)/)
                     if (evaluationMatch) {
@@ -52,7 +52,6 @@ class StockFishEngine {
                     clearTimeout(timeout)
                     this.evaluating = false;
                     this.worker.removeEventListener("message", handleMessage)
-                    console.log("FINISHED EVAL FEN", fen);
                     resolve(new Evaluation(evalType, evaluation, bestMove))
                 }
             }
@@ -62,5 +61,26 @@ class StockFishEngine {
         })
     }
 }
+
+class StockFishTaskManager {
+    constructor() {
+        this.promiseChain = Promise.resolve();
+    }
+
+    async completeTask(fn) {
+        const newTask = async() => {
+            return await fn();
+        }
+        const newPromiseChain = this.promiseChain.then(newTask)
+        .catch((error) => {
+            return null;
+        })
+        this.promiseChain = newPromiseChain;
+        return newPromiseChain;
+    }
+
+}
+
 const engineFile = "/stockfish-16.1-single.js";
 export const engine = new StockFishEngine(engineFile)
+export const engineTaskManager = new StockFishTaskManager()

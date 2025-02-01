@@ -19,11 +19,18 @@ function App() {
   const [boardWidth, setBoardWidth] = useState(0);
 
   useLayoutEffect(() => {
-    if (boardRef.current) {
-      setBoardWidth(boardRef.current.offsetWidth);
-    } else {
-      console.log(`${JSON.stringify(boardRef)} does not have a current?`);
-    }
+    const updateBoardWidth = () => {
+      if (boardRef.current) {
+        setBoardWidth(boardRef.current.offsetWidth);
+      }
+    };
+  
+    updateBoardWidth(); // Set initial width
+    window.addEventListener("resize", updateBoardWidth);
+  
+    return () => {
+      window.removeEventListener("resize", updateBoardWidth);
+    };
   }, []);
   // gameReview.getDeltaEvaluations()
   useEffect(() => {
@@ -51,7 +58,7 @@ function App() {
           <Chessboard id="BasicBoard" position={getBoardAtMove(moveIndex)} arePiecesDraggable={false} customBoardStyle={{"position":"relative"}} />
         </div>
         <GamePanel allMoves={history} index={moveIndex} setIndex={setMoveIndex} />
-        <MoveRating delta={deltas[moveIndex]} moveIndex={moveIndex} move={history[moveIndex]} boardWidth={boardWidth} />
+        <MoveRating boardWidth={boardWidth} />
       </div>   
 
     </div>

@@ -18,7 +18,7 @@ export function computeSquareLocation(square, boardWidth) { //TODO black pieces 
     let x = files[square[0]];
     let y = ranks[square[1]];
     // return {'top':0, 'left':0};
-    return {'top':boardWidth / 8 * (y-0.2), 'left':boardWidth / 8 * (x+1.1) };
+    return {'top':boardWidth / 8 * (y-0.2), 'left':boardWidth / 8 * (x+1) };
 
 }
 export function findSquare(move, moveIndex) {
@@ -37,16 +37,13 @@ export function findSquare(move, moveIndex) {
 
 
 export function findMoveType(delta) {
-    console.log("finding move for delta", delta)
     const moveDeltas = [['best', 0.05], ['excellent', 0.1], ['good', 0.2], ['inaccuracy',0.4], ['mistake', 1.0], ['blunder', 10]];
     for (let i = 0; i < moveDeltas.length; i++) {
         let d = moveDeltas[i];
         if (delta < d[1]) {
-            console.log(d[0])
             return d[0];
         }
     }
-    console.log('blunder')
     return 'blunder';
 }
 

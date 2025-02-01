@@ -1,14 +1,18 @@
 import {useRef} from "react";
 import {Chess} from "chess.js";
 import { isValidPgn } from "./Utils";
-
+import { useGameState } from "./contexts/GameStateContext";
 function GameInput() {
     const textRef = useRef(null);
+    const {setPgn} = useGameState();
 
     function handleSubmit() {
         let textContent = textRef.current.value;
         if (isValidPgn(textContent)) {
-            // do something
+            console.log("setting pgn to ", textContent);
+            setPgn(textContent);
+        } else {
+            console.log("PGN is invalid!");
         }
    
     }

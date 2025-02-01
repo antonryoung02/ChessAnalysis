@@ -5,6 +5,7 @@
   "dependencies": {
     "chess.js": "^1.0.0",
     "cra-template": "1.2.0",
+    "queue-fifo": "^0.2.6",
     "react": "^19.0.0",
     "react-chessboard": "^4.7.2",
     "react-dom": "^19.0.0",
